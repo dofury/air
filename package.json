@@ -4,17 +4,16 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "author": "dofury",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.2.0",
-    "connection": "^1.4.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "https": "^1.0.0",
-    "mysql": "^2.18.1",
-    "mysql2": "^2.3.3"
+    "mysql": "^2.18.1"
   }
 }

@@ -34,10 +34,9 @@ app.get('/air', async function(request, response){
                     airlineId: 'JNA'
                 }
             })
-            console.log(result.data.response.body.items);
-            var test;
-            test = mysqlConnection.search();
-            console.log(test);
+            var items = result.data.response.body.items;
+            console.log(items.item[0]);
+            mysqlConnection.search(conection,items.item[0]);
         }catch(error){
             console.log(error);
         }

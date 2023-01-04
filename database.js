@@ -29,10 +29,27 @@ const mysqlConnection = {
             }
         });
     },
-    search: async (req,res) => {
-        query('SELECT * FROM ticket',(error,rows)=>{
-            if(error) throw error;
-            return rows;
+    search: function (con,item) {
+        const date = item.depPlandTime.toString().substr(0,7)
+        const depTime = item.depPlandTime.toString().substr(8,11)
+        const arrTime = item.arrPlandTime.toString().substr(8,11)
+        var sql = "INSERT INTO ticket(ticketNum,ticketName,airlineName,depAirportName,arrAirportName,ticketCharge,ticketDate,depTime,arrTime)"
+        + "VALUES (NULL,"
+        + "'" + item.vihicleId + "',"
+        + "'" + item.airlineNm + "',"
+        + "'" + item.depAirportNm + "',"
+        + "'" + item.arrAirportNm + "',"
+        + "'" + item.economyCharge + "',"
+        + "'" + date + "',"
+        + "'" + depTime + "',"
+        + "'" + arrTime + "')";
+        con.query(sql, function(err,result){
+            if(err) throw err;      
+            else
+            {
+                console.log("1 record INSERT!"); 
+            }
+            
         });
     }
 }
