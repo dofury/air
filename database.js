@@ -46,7 +46,7 @@ const mysqlConnection = {
         const date = item.depPlandTime.toString().substr(0,8)
         const depTime = item.depPlandTime.toString().substr(8,11)
         const arrTime = item.arrPlandTime.toString().substr(8,11)
-        var sql = "INSERT INTO ticket(ticketNum,ticketName,airlineName,depAirportName,arrAirportName,ticketCharge,ticketDate,depTime,arrTime)"
+        let sql = "INSERT INTO ticket(ticketNum,ticketName,airlineName,depAirportName,arrAirportName,ticketCharge,ticketDate,depTime,arrTime)"
         + "VALUES (NULL,"
         + "'" + item.vihicleId + "',"
         + "'" + item.airlineNm + "',"
@@ -66,7 +66,7 @@ const mysqlConnection = {
         });
     },
     search: async function (con,ticket) {
-        var sql = "SELECT * FROM ticket WHERE " 
+        let sql = "SELECT * FROM ticket WHERE " 
         + "depAirportName = " + "'" + ticket.depName + "'" + " AND "
         + "arrAirportName = " + "'" + ticket.arrName + "'" + " AND "
         + "ticketDate = " + "'" + ticket.date + "' ORDER BY ticketCharge ASC";

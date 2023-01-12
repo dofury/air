@@ -6,6 +6,7 @@ const mysqlConnection = require('./database');
 const app = express();
 const conection = mysqlConnection.init();
 const reqTicket = require('./reqTicket');
+const { json } = require('express');
 mysqlConnection.open(conection);
 const airPorts = ['AAR','ABL','ASV','ESR','FGW','JJA','JNA','KAL','TWB','HGG'];
 require('dotenv').config();
@@ -19,15 +20,19 @@ app.listen(8080, function(){
 
 
 app.get('/air', async function(request, response){
-    var reqData;
+    let reqData;
     if(request.query != null)//쿼리 데이터가 null이 아니면 데이터를 넣음
     {
         reqData = new reqTicket.ReqTicket(request.query.depName,request.query.arrName,request.query.date);
     }
-    var data = await mysqlConnection.search(conection, reqData);
+    let data = await mysqlConnection.search(conection, reqData);
+    var code;
     if(data)
     {
         console.log("데이터 있음");
+        code = {
+            status: 200
+        };
     }
     else
     {
@@ -51,25 +56,52 @@ app.get('/air', async function(request, response){
                     airlineId: airPort
                 }
             })
-            var items = result.data.response.body.items;
-            for(var item of items.item)//날짜는 같으나 시간대가 다른 티켓 반복 추가
+            let items = result.data.response.body.items;
+            if(items.item != null)
             {
-                try {
-                    mysqlConnection.save(conection,item);  
-                } catch (error) {
-                    console.log(error);
+                for(let item of items.item)//날짜는 같으나 시간대가 다른 티켓 반복 추가
+                {
+                    try {
+                        mysqlConnection.save(conection,item);  
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }
+                console.log("데이터없어서 추가");
             }
-            console.log("데이터없어서 추가");
         }catch(error){
             console.log(error);
         }
     });
     }
-    data = await mysqlConnection.search(conection, reqData);
-    console.log('데이터 추가해서 있음')
+    data = await mysqlConnection.search(conection, reqData, function (result) {
+        var dataList = [];
+        for (var data of result){
+            dataList.push(data);
+        }
+        console.log(dataList);
+    });
+    if(data == 0)
+    {
+        code = {
+            status: 404
+        };
+        console.log('데이터를 받지못했음');
     }
-    response.json(data);
-
+    else
+    {
+        code = {
+            status: 200
+        };
+        console.log('데이터 추가해서 있음');
+    }
+    }
+    let result = {
+        data: data
+    };
+    JSON.stringify(code);
+    Object.assign(result,code);
+    //console.log(result);
+    response.json(result);
     
 });

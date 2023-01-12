@@ -1,7 +1,6 @@
 const util = {
     trans: function(name)
     {
-        var name;
         switch(name)
         {
             case '김해':
