@@ -101,7 +101,6 @@ app.get('/air', async function(request, response){
     };
     JSON.stringify(code);
     Object.assign(result,code);
-    //console.log(result);
     response.json(result);
     
 });
