@@ -48,17 +48,9 @@ const mysqlConnection = {
         const arrTime = item.arrPlandTime.toString().substr(8,11)
         if(item.economyCharge == undefined)
             item.economyCharge = 999999;
-        let sql = "INSERT INTO ticket(ticketNum,ticketName,airlineName,depAirportName,arrAirportName,ticketCharge,ticketDate,depTime,arrTime)"
-        + "VALUES (NULL,"
-        + "'" + item.vihicleId + "',"
-        + "'" + item.airlineNm + "',"
-        + "'" + item.depAirportNm + "',"
-        + "'" + item.arrAirportNm + "',"
-        + "'" + item.economyCharge + "',"
-        + "'" + date + "',"
-        + "'" + depTime + "',"
-        + "'" + arrTime + "')";
-        con.query(sql, function(err,result){
+        let sql = "INSERT INTO ticket(ticketNum,ticketName,airlineName,depAirportName,arrAirportName,ticketCharge,ticketDate,depTime,arrTime) VALUES (NULL,?,?,?,?,?,?,?,?)"
+        con.query(sql,
+            [item.vihicleId,item.airlineNm,item.depAirportNm,item.arrAirportNm,item.economyCharge,date,depTime,arrTime], function(err,result){
             if(err) throw err;      
             else
             {
@@ -68,15 +60,10 @@ const mysqlConnection = {
         });
     },
     search: async function (con,ticket) {
-        let sql = "SELECT * FROM ticket WHERE " 
-        + "depAirportName = " + "'" + ticket.depName + "'" + " AND "
-        + "arrAirportName = " + "'" + ticket.arrName + "'" + " AND "
-        + "ticketDate = " + "'" + ticket.date + "' ORDER BY ticketCharge ASC";
-        ["a", "b", "c"]
-        let sql2 = "SELECT * FROM ticket WHERE depAirportName = ? AND arrAirportName = ? AND ticketDate = ? ORDER BY ticketCharge ASC";
+        let sql = "SELECT * FROM ticket WHERE depAirportName = ? AND arrAirportName = ? AND ticketDate = ? ORDER BY ticketCharge ASC";
 
         return new Promise((resolve)=>{
-            con.query(sql, function(err,result) {
+            con.query(sql,[ticket.depName,ticket.arrName,ticket.date], function(err,result) {
 
                 if(err) throw err;      
                 else

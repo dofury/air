@@ -2,17 +2,29 @@ const router = require('express').Router();
 const mysqlConnection = require('./database');
 const conection = mysqlConnection.init();
 const reqTicket = require('./reqTicket');
+const axios = require('axios');
+
 mysqlConnection.open(conection);
-const util = require('./utility');
 const https = require('https');
 https.globalAgent.options.rejectUnauthorized = false;
-const airPorts = ['AAR', 'ABL', 'ASV', 'ESR', 'FGW', 'JJA', 'JNA', 'KAL', 'TWB', 'HGG'];
 
+async function getResult(request){
+    return new Promise((resolve)=>{
+        let sql = "SELECT * FROM airport WHERE airportName = ? OR airportName = ?";
+        conection.query(sql,[request.query.depName,request.query.arrName], async function(err,result) {
+            if(err) throw err;
+            else resolve(result)
+        });
+        
+    })
+}
 router.get('/get', async function (request, response) {
     let reqData;
     if (request.query != null)//쿼리 데이터가 null이 아니면 데이터를 넣음
     {
-        reqData = new reqTicket.ReqTicket(request.query.depName, request.query.arrName, request.query.date);
+        let result = await getResult(request);
+        reqData = new reqTicket.ReqTicket(result[0].airportId, result[1].airportId, request.query.date);
+        console.log(reqData.arrName);
     }
     let data = await mysqlConnection.search(conection, reqData);
 
@@ -25,9 +37,9 @@ router.get('/get', async function (request, response) {
     };
 
     if (data) {
-        console.log(result.code.message);
         result.code.status = "CODE000"
         result.code.message = "데이터 있음"
+        console.log(result.code.message);
     }
     else {
         await axios({
@@ -42,8 +54,8 @@ router.get('/get', async function (request, response) {
                         pageNo: '1',
                         numOfRows: '10',
                         _type: 'json',
-                        depAirportId: util.trans(reqData.depName).toString(),
-                        arrAirportId: util.trans(reqData.arrName).toString(),
+                        depAirportId: reqData.depName,
+                        arrAirportId: reqData.arrName,
                         depPlandTime: reqData.date,
                     }
                 })
@@ -72,7 +84,6 @@ router.get('/get', async function (request, response) {
             for (var data of result) {
                 dataList.push(data);
             }
-            console.log(dataList);
         });
         if (data == 0) {
             result.code.status = "CODE500"
