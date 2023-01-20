@@ -5,6 +5,8 @@ const reqTicket = require('./reqTicket');
 mysqlConnection.open(conection);
 const util = require('./utility');
 const https = require('https');
+const axios = require('axios');
+
 https.globalAgent.options.rejectUnauthorized = false;
 const airPorts = ['AAR', 'ABL', 'ASV', 'ESR', 'FGW', 'JJA', 'JNA', 'KAL', 'TWB', 'HGG'];
 
